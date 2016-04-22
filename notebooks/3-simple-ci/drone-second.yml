@@ -1,0 +1,18 @@
+publish:
+  docker:
+    registry: registry:5000
+    repo: registry:5000/flaskr
+    tag:
+      - latest
+      - $$COMMIT
+    file: Dockerfile
+    storage_driver: overlay
+    insecure: true
+notify:
+  webhook:
+    method: PUT
+    urls:
+      - http://172.17.0.1:8001/apis/extensions/v1beta1/namespaces/default/deployments/flaskr
+    content_type: application/json
+    template: >
+      {"kind": "Deployment", "spec": {"template": {"spec": {"containers": [{"image": "registry:5000/flaskr:{{build.commit}}", "name": "flaskr", "ports": [{"containerPort": 5000}]}]}, "metadata": {"labels": {"app": "flaskr"}}}, "replicas": 1}, "apiVersion": "extensions/v1beta1", "metadata": {"name": "flaskr"}}

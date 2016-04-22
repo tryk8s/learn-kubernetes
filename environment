@@ -1,0 +1,3 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+KUBERNETES_SERVICE_HOST="kubernetes"
+KUBERNETES_SERVICE_PORT="443

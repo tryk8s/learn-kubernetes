@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: drone
+  labels:
+    app: drone
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    nodePort: 30380
+  selector:
+    app: drone
+  type: NodePort

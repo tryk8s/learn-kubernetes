@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: drone
+  labels:
+    app: drone
+spec:
+  replicas: 1
+  selector:
+    app: drone
+  template:
+    metadata:
+      labels:
+        app: drone
+    spec:
+      containers:
+      - name: kubectl
+        image: orbweb/kubectl
+        imagePullPolicy: Always
+        command:
+        - /usr/local/bin/kubectl
+        - proxy
+        - --accept-hosts=^172\.17\.0\.1$
+        - --address=0.0.0.0
+        - --port=8001
+      - name: dind
+        image: rancher/docker:v1.10.3
+        ports:
+        - containerPort: 30080
+          name: http
+          protocol: TCP
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: docker-run
+          mountPath: /var/run
+        - name: docker-lib
+          mountPath: /var/lib/docker
+        - name: drone-data
+          mountPath: /var/lib/drone
+      - name: drone
+        image: drone/drone:0.4
+        env:
+        - name: REMOTE_DRIVER
+          value: gogs
+        - name: REMOTE_CONFIG
+          value: http://gogs:3000?open=true
+        - name: PLUGIN_FILTER
+          value: plugins/* tryk8s/*
+        ports:
+        - containerPort: 8000
+          name: drone
+          protocol: TCP
+        volumeMounts:
+        - name: docker-run
+          mountPath: /var/run
+        - name: docker-lib
+          mountPath: /var/lib/docker
+        - name: drone-data
+          mountPath: /var/lib/drone
+      volumes:
+      - name: docker-run
+        emptyDir: {}
+      - name: docker-lib
+        emptyDir: {}
+      - name: drone-data
+        emptyDir: {}

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: gogs
+  labels:
+    app: gogs
+spec:
+  replicas: 1
+  selector:
+    app: gogs
+  template:
+    metadata:
+      labels:
+        app: gogs
+    spec:
+      containers:
+      - name: gogs
+        image: gogs/gogs
+        ports:
+        - containerPort: 3000
+          name: gogs-http
+          protocol: TCP
+        - containerPort: 22
+          name: gogs-ssh
+          protocol: TCP
